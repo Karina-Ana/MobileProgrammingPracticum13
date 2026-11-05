@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// F. MODEL CLASS POST
 class Post {
   final int id;
   final int userId;
@@ -21,7 +19,6 @@ class Post {
     required this.createdAt,
   });
 
-  // Factory constructor untuk membuat objek Post dari JSON
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
       id: json['id'],
@@ -33,7 +30,6 @@ class Post {
   }
 }
 
-// E. METHOD MAIN DAN CLASS MYAPP
 void main() {
   runApp(const MyApp());
 }
@@ -66,7 +62,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// G. CLASS HOMEPAGE
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -75,7 +70,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Variabel state untuk menyimpan data post
   Post? createdPost;
 
   Future<void> createPost(String title, String body) async {
@@ -96,10 +90,8 @@ class _HomePageState extends State<HomePage> {
         }),
       );
 
-      // Memastikan widget masih aktif
       if (!mounted) return;
 
-      // Status code 201 menandakan berhasil
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
 
@@ -210,6 +202,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }
+
   void showDeleteConfirmationDialog(int id) {
     showDialog(
       context: context,
@@ -298,9 +291,9 @@ class _HomePageState extends State<HomePage> {
 
   void showUpdatePostDialog(Post currentPost) {
     final titleController =
-    TextEditingController(text: currentPost.title);
+        TextEditingController(text: currentPost.title);
     final bodyController =
-    TextEditingController(text: currentPost.body);
+        TextEditingController(text: currentPost.body);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -359,130 +352,118 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Demo CRUD client-server'),
       ),
-
-      // K. MENAMPILKAN DATA POST
       body: Center(
         child: createdPost == null
             ? Text(
-          'Demo CRUD client-server di Flutter',
-          style: GoogleFonts.montserrat(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: Colors.indigo[900],
-          ),
-        )
-            : ListView(
-          padding: const EdgeInsets.symmetric(
-            vertical: 16,
-          ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: Card(
-                elevation: 8,
-                shadowColor: Colors.indigo.withOpacity(0.3),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                'Demo CRUD client-server di Flutter',
+                style: GoogleFonts.montserrat(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.indigo[900],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              createdPost!.title,
-                              style: GoogleFonts.montserrat(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.indigo[900],
+              )
+            : ListView(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: Card(
+                      elevation: 8,
+                      shadowColor: Colors.indigo.withOpacity(0.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    createdPost!.title,
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.indigo[900],
+                                    ),
+                                  ),
+                                ),
+                                PopupMenuButton<String>(
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem(
+                                      value: 'update',
+                                      child: Text('Update'),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'delete',
+                                      child: Text('Delete'),
+                                    ),
+                                  ],
+                                  onSelected: (value) {
+                                    if (value == 'update') {
+                                      if (createdPost != null) {
+                                        showUpdatePostDialog(createdPost!);
+                                      }
+                                    } else if (value == 'delete') {
+                                      if (createdPost != null) {
+                                        showDeleteConfirmationDialog(createdPost!.id);
+                                      }
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              createdPost!.body,
+                              style: GoogleFonts.openSans(
+                                fontSize: 18,
+                                height: 1.5,
+                                color: Colors.blueGrey[900],
                               ),
                             ),
-                          ),
-                          PopupMenuButton<String>(
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: 'update',
-                                child: Text('Update'),
+                            const SizedBox(height: 12),
+                            Text(
+                              'id: ${createdPost!.id}',
+                              style: GoogleFonts.openSans(
+                                fontSize: 14,
+                                color: Colors.blueGrey[600],
                               ),
-                              const PopupMenuItem(
-                                value: 'delete',
-                                child: Text('Delete'),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'userID: ${createdPost!.userId}',
+                              style: GoogleFonts.openSans(
+                                fontSize: 14,
+                                color: Colors.blueGrey[600],
                               ),
-                            ],
-                            onSelected: (value) {
-                              if (value == 'update') {
-                                if (createdPost != null) {
-                                  showUpdatePostDialog(createdPost!);
-                                }
-                              } else if (value == 'delete') {
-                                if (createdPost != null) {
-                                  showDeleteConfirmationDialog(createdPost!.id);
-                                }
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        createdPost!.body,
-                        style: GoogleFonts.openSans(
-                          fontSize: 18,
-                          height: 1.5,
-                          color: Colors.blueGrey[900],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              DateFormat(
+                                "dd MMMM yyyy, HH:mm 'WIB'",
+                              ).format(createdPost!.createdAt),
+                              style: GoogleFonts.openSans(
+                                fontSize: 14,
+                                color: Colors.blueGrey[600],
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        'id: ${createdPost!.id}',
-                        style: GoogleFonts.openSans(
-                          fontSize: 14,
-                          color: Colors.blueGrey[600],
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        'userID: ${createdPost!.userId}',
-                        style: GoogleFonts.openSans(
-                          fontSize: 14,
-                          color: Colors.blueGrey[600],
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      Text(
-                        DateFormat(
-                          "dd MMMM yyyy, HH:mm 'WIB'",
-                        ).format(createdPost!.createdAt),
-                        style: GoogleFonts.openSans(
-                          fontSize: 14,
-                          color: Colors.blueGrey[600],
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
-
-      // J. FLOATING ACTION BUTTON
       floatingActionButton: FloatingActionButton(
         onPressed: showAddPostDialog,
         backgroundColor: Colors.indigo[900],
